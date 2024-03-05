@@ -1,46 +1,40 @@
-# Docker compose version
 version: '3'
 
-# The network 'inception' will link container between them via 'bridge'
 networks:
   inception:
     name: inception
     driver: bridge
 
 volumes:
-  # Volume to store data from WordPress
   wp:
     driver: local
     name: wp
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/wordpress
-  # Volume to store data from MariaDB
+      device: /home/luhumber/data/wordpress
   db:
     driver: local
     name: db
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/mariadb
+      device: /home/luhumber/data/mariadb
 
 services:
-  # WordPress service
   wordpress:
     container_name: wordpress
-    build: ./requirements/wordpress # Path of the files for this docker 
+    build: ./requirements/wordpress
     env_file:
-      - .env # Define env variables
+      - .env
     depends_on:
-      - mariadb # This service need this docker too
+      - mariadb
     volumes:
-      - wp:/var/www/html # What volume is used to store the data
+      - wp:/var/www/html
     networks:
-      - inception # Name of the network
+      - inception
     restart: always
 
-  # MariaDB service
   mariadb:
     container_name: mariadb
     build:
@@ -54,7 +48,6 @@ services:
       - inception
     restart: always
 
-  # Nginx service
   nginx:
     container_name: nginx
     build: ./requirements/nginx
