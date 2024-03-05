@@ -27,4 +27,4 @@ fi
 
 mysqladmin -u root -p$MYSQL_ROOT_PASSWORD shutdown
 
-exec "$@"
+mysqld --bind-address=0.0.0.0

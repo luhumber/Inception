@@ -1,4 +1,4 @@
-FROM		debian:buster
+FROM		debian:bookworm
 
 RUN		apt update			-y
 RUN		apt upgrade			-y
@@ -9,5 +9,4 @@ RUN		chmod +x mariadb_conf.sh
 
 EXPOSE		3306
 
-ENTRYPOINT	["./mariadb_conf.sh"]
-CMD		["mysqld", "--bind-address=0.0.0.0"]
+CMD ["./mariadb_conf.sh"]
