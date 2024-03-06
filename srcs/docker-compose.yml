@@ -1,62 +1,71 @@
 version: '3'
 
 networks:
-  inception:
-    name: inception
-    driver: bridge
-
+    inception:
+        name: inception
+        driver: bridge
+  
 volumes:
-  wp:
+
+  mariadb_data:
     driver: local
-    name: wp
     driver_opts:
-      type: none
-      o: bind
-      device: /home/luhumber/data/wordpress
-  db:
-    driver: local
-    name: db
-    driver_opts:
-      type: none
-      o: bind
       device: /home/luhumber/data/mariadb
+      type: 'none'
+      o: 'bind'
+
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      device: /home/luhumber/data/wordpress
+      type: 'none'
+      o: 'bind'
 
 services:
-  wordpress:
-    container_name: wordpress
-    build: ./requirements/wordpress
-    env_file:
-      - .env
-    depends_on:
-      - mariadb
-    volumes:
-      - wp:/var/www/html
-    networks:
-      - inception
-    restart: always
 
-  mariadb:
-    container_name: mariadb
-    build:
-      context: requirements/mariadb
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    volumes:
-      - db:/var/lib/mysql
-    networks:
-      - inception
-    restart: always
+    mariadb:
+      build: requirements/mariadb
+      env_file: 
+        - .env 
+      restart: always
+      container_name: mariadb
+      image: mariadb:42
+      volumes:
+        - mariadb_data:/var/lib/mysql
+      ports:
+        - "3306"
+      networks:
+        - inception
 
-  nginx:
-    container_name: nginx
-    build: ./requirements/nginx
-    ports:
-      - "443:443"
-    depends_on:
-      - wordpress
-    volumes:
-      - wp:/var/www/html
-    networks:
-      - inception
-    restart: always
+    wordpress:
+      build: requirements/wordpress
+      env_file: 
+        - .env 
+      container_name: wordpress
+      restart: always
+      image: wordpress:42
+      depends_on:
+        - mariadb
+      volumes:
+        - wordpress_data:/var/www/html
+      ports:
+        - "9000"
+      networks:
+        - inception
+
+    nginx:
+      build: requirements/nginx
+      env_file: 
+        - .env 
+      restart: always
+      container_name: nginx
+      image: nginx:42
+      depends_on:
+        - wordpress
+      ports:
+        - "443:443"
+      volumes:
+        - wordpress_data:/var/www/html
+      networks:
+        - inception

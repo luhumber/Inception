@@ -3,10 +3,15 @@ FROM		debian:bookworm
 RUN		apt update			-y
 RUN		apt upgrade			-y
 RUN		apt-get install mariadb-server	-y
+RUN     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY		conf/mariadb_conf.sh .
-RUN		chmod +x mariadb_conf.sh
+RUN mkdir -p /var/run/mysqld && mkdir -p /var/lib/mysql
 
-EXPOSE		3306
+COPY conf/50-server.cnf	/etc/mysql/mariadb.conf.d/50-server.cnf
+COPY ./tools/config.sh /config.sh
 
-CMD ["./mariadb_conf.sh"]
+RUN chmod +x config.sh && chmod -R 777 /var/lib/mysql /var/run/mysqld
+
+EXPOSE 3306
+
+ENTRYPOINT ["./config.sh"]

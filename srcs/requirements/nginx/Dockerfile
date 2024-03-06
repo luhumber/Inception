@@ -1,15 +1,18 @@
 FROM		debian:bookworm
 
-RUN		apt-get update 
-RUN		apt-get install nginx	-y
-RUN		apt-get install openssl	-y
+RUN apt-get update && apt-get install -y \
+    nginx
+RUN apt install openssl -y
 
-EXPOSE		443
+COPY ./conf/nginx.conf  /etc/nginx/sites-available/default
 
-COPY		./conf/nginx.conf /etc/nginx/sites-enabled/default
-COPY		./tools/nginx_start.sh /var/www
-RUN		    chmod +x /var/www/nginx_start.sh
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+     -keyout /etc/ssl/private/cert_key.key \
+     -out /etc/ssl/certs/cert_key.crt \
+     -subj "/C=FR/ST=RHONE/L=LYON/O=42 Lyon/OU=42/CN=luhumber.42.fr/UID=luhumber"
 
-ENTRYPOINT	["/var/www/nginx_start.sh"]
+RUN chmod 777 -R /var/www/html
 
-CMD		["nginx", "-g", "daemon off;"]
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]

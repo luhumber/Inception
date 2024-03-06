@@ -1,17 +1,34 @@
 FROM		debian:bookworm
 
-RUN		apt-get update -y
-RUN		apt-get upgrade -y
-RUN		apt-get -y install wget
-RUN		apt-get install -y php8.2 php-fpm php-mysqli mariadb-client wget curl
+RUN sleep 10
 
-EXPOSE		9000
+RUN apt-get update && apt-get install -y \
+	mariadb-client \
+	php-fpm \
+	php-mysql \
+	php-curl \
+	php-dom \
+	php-imagick \
+	php-mbstring \
+	php-zip \
+	php-gd \
+	php-intl \
+	curl \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
-COPY		./conf/www.conf /etc/php/8.2/fpm/pool.d
-COPY		./tools /var/www/
+COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/
 
-RUN		chmod +x /var/www/auto_install.sh
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+	&& chmod +x wp-cli.phar \
+	&& mv wp-cli.phar /usr/local/bin/wp
 
-ENTRYPOINT	["/var/www/auto_install.sh"]
+WORKDIR /var/www/html/
+RUN mkdir -p /run/php
 
-CMD		["/usr/sbin/php-fpm8.2", "--nodaemonize"]
+EXPOSE 9000
+
+COPY ./tools/wp_config.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/wp_config.sh
+
+ENTRYPOINT ["/usr/local/bin/wp_config.sh"]
