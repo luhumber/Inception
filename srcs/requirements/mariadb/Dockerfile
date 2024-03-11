@@ -1,4 +1,4 @@
-FROM		debian:bookworm
+FROM		debian:bullseye
 
 RUN		apt update			-y
 RUN		apt upgrade			-y

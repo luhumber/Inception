@@ -1,4 +1,4 @@
-FROM		debian:bookworm
+FROM		debian:bullseye
 
 RUN sleep 10
 
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/
+COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
 	&& chmod +x wp-cli.phar \

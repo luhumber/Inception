@@ -5,7 +5,7 @@ wp core download --allow-root
 
 sleep 10
 
-#Creation de la configuration de WordPress
+#Creation configuration WordPress
 wp config create --dbname=$MYSQL_DATABASE \
                 --dbuser=$MYSQL_USER \
                 --dbpass=$MYSQL_PASSWORD \
@@ -28,4 +28,4 @@ wp user create --allow-root \
 chown -R www-data:www-data /var/www/html/
 
 # Demarrage PHP-FPM
-/usr/sbin/php-fpm8.2 -F
+/usr/sbin/php-fpm7.4 -F
