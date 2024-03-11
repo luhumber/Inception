@@ -5,13 +5,12 @@
 
 [mysqld]
 
-# Repertoire ou mariadb stock ses bdd 
+# Repertoire pour db
 datadir = /var/lib/mysql
 
-# Pour que le serveur MariaDB accepte toute les connexions
+# Pour que MariaDB accepte toute les connexions
 bind_address = *
 
 port = 3306
 
-# specifie l'OS sous lquel MariaDb s'execute.
 user = mysql
